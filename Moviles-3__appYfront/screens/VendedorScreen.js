@@ -11,7 +11,7 @@ export default function VendedorScreen() {
       idVendedor:'',
       nombre:'',
       correo:'',
-      totalComision:''
+      totalComision:'0'
     },
     mode:'onChange'
   })
@@ -19,13 +19,22 @@ export default function VendedorScreen() {
   const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState([]);
 
+  const onSubmitSave = datos =>{
+    console.log(datos)
+    saveVendedor()
+  }
+  
+  const onSubmitUpdate = datos =>{
+    console.log(datos)
+    updateVendedor(getValues("idVendedor"))
+  }
+
   const url="http://192.168.1.2:3000";
 
-  
 
 
   const saveVendedor = async () => {
-    if (!getValues("idVendedor").trim() || !getValues("nombre").trim() || !getValues("correo").trim() || !getValues("totalComision").trim()) {
+    if (!getValues("idVendedor").trim() || !getValues("nombre").trim() || !getValues("correo").trim()) {
       alert("Todos los datos son obligatorios");
       return;
     }
@@ -52,7 +61,7 @@ export default function VendedorScreen() {
   };
 
   const updateVendedor = async (id) => {
-    if (!getValues("idVendedor").trim() || !getValues("nombre").trim() || !getValues("correo").trim() || !getValues("totalComision").trim()) {
+    if (!getValues("idVendedor").trim() || !getValues("nombre").trim() || !getValues("correo").trim()) {
       alert("Todos los datos son obligatorios");
       return;
     }
@@ -96,16 +105,12 @@ export default function VendedorScreen() {
     try {
       const response = await axios.get(`${url}/api/vendedores/${id}`);
       setData(response.data);
-      if (response.data.idVendedor != null) {
         setValue('nombre', response.data.nombre);
         setValue('correo', response.data.correo);
         setValue('totalComision', response.data.totalComision);
-      }
-      else {
-        alert("Id del Vendedor NO existe. Inténtelo con otro.")
-      }
 
     } catch (error) {
+      alert("El vendedor no existe.")
       console.log(error)
     }
     finally {
@@ -114,20 +119,8 @@ export default function VendedorScreen() {
   };
 
 
-
-const onSubmitSave = datos =>{
-  console.log(datos)
-  saveVendedor()
-}
-
-const onSubmitUpdate = datos =>{
-  console.log(datos)
-  updateVendedor(getValues("idVendedor"))
-}
-
-
   return (
-    <View style={{ flex: 1, padding: 24 }}>
+    <View style={{ flex: 1, padding: 2 }}>
       <TouchableOpacity
         style={[styles.touchables, { backgroundColor: '#c71852' }]}
         onPress={()=>getVendedores()}
@@ -210,6 +203,7 @@ const onSubmitUpdate = datos =>{
             onChange={onChange}
             value={value}
             onBlur={onBlur}
+            editable={false}
           />
         )}
         name='totalComision'
